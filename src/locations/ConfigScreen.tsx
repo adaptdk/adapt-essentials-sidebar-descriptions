@@ -6,9 +6,10 @@ import {
   Form,
   Heading,
   Modal,
-  Paragraph,
 } from "@contentful/f36-components";
+import tokens from "@contentful/f36-tokens";
 import { useSDK } from "@contentful/react-apps-toolkit";
+import { UserProps } from "contentful-management";
 import { css } from "emotion";
 import React from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -16,14 +17,20 @@ import { v4 as uuidv4 } from "uuid";
 
 import ContentTypesSelect from "../components/ContentTypesSelect";
 import DescriptionEditor from "../components/DescriptionEditor";
+import { WelcomeSection } from "../components/WelcomeSection";
 import { TypeContentType, TypeDescription } from "../utils/types";
 
-export interface AppInstallationParameters {}
+export interface AppInstallationParameters {
+  descriptions?: Array<TypeDescription>;
+}
 
 const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({});
   const [contentTypes, setContentTypes] = useState<TypeContentType[]>([]);
-  const [descriptions, setDescriptions] = useState<TypeDescription[]>([]);
+  const [descriptions, setDescriptions] = useState<TypeDescription[]>(
+    parameters.descriptions || [],
+  );
+  const [users, setUsers] = useState<UserProps[] | []>([]);
   const [isOpen, setOpen] = useState(false);
   const sdk = useSDK<ConfigAppSDK>();
 
@@ -36,14 +43,18 @@ const ConfigScreen = () => {
     // related to this app installation
     const currentState = await sdk.app.getCurrentState();
 
+    console.log(`descriptions on save: `, descriptions);
+
     return {
       // Parameters to be persisted as the app configuration.
-      parameters,
+      parameters: {
+        descriptions,
+      },
       // In case you don't want to submit any update to app
       // locations, you can just pass the currentState as is
       targetState: currentState,
     };
-  }, [parameters, sdk]);
+  }, [descriptions, sdk]);
 
   useEffect(() => {
     // `onConfigure` allows to configure a callback to be
@@ -61,6 +72,15 @@ const ConfigScreen = () => {
 
       if (currentParameters) {
         setParameters(currentParameters);
+
+        if (currentParameters?.descriptions) {
+          setDescriptions(currentParameters.descriptions);
+        }
+      }
+
+      const spaceUsers = await sdk.cma.user.getManyForSpace({});
+      if (spaceUsers.items?.at(0)) {
+        setUsers(spaceUsers.items);
       }
 
       const query = await sdk.cma.contentType.getMany({});
@@ -95,9 +115,6 @@ const ConfigScreen = () => {
 
   const handleAddDescription = (contentType: TypeContentType) => {
     const descriptionsClone = [...descriptions];
-    const filteredTypes = contentTypes.filter(
-      (type) => type.id !== contentType.id,
-    );
 
     const description = {
       id: contentType.id,
@@ -113,7 +130,15 @@ const ConfigScreen = () => {
 
     descriptionsClone.push(description);
     setDescriptions(descriptionsClone);
-    setContentTypes(filteredTypes);
+  };
+
+  const handleRemoveDescription = (descriptionId: string) => {
+    const updatedDescriptions = descriptions.filter(
+      (description) => description.id !== descriptionId,
+    );
+
+    // Update the state with the new descriptions array
+    setDescriptions(updatedDescriptions);
   };
 
   const handleDescriptionChange = (
@@ -139,7 +164,9 @@ const ConfigScreen = () => {
     );
   };
 
-  const handleAddItem = (descriptionId: string) => {
+  console.log(`descriptions: `, descriptions);
+
+  const handleAddItem = (descriptionId: string, type: `text` | `image`) => {
     setDescriptions(
       descriptions.map((description) => {
         if (description.id === descriptionId) {
@@ -149,10 +176,24 @@ const ConfigScreen = () => {
               ...description.items,
               {
                 id: uuidv4(),
-                type: `text`, // or any default type you want
+                type: type,
                 value: ``,
               },
             ],
+          };
+        }
+        return description;
+      }),
+    );
+  };
+
+  const handleRemoveItem = (descriptionId: string, itemId: string) => {
+    setDescriptions(
+      descriptions.map((description) => {
+        if (description.id === descriptionId) {
+          return {
+            ...description,
+            items: description.items.filter((item) => item.id !== itemId),
           };
         }
         return description;
@@ -166,10 +207,7 @@ const ConfigScreen = () => {
       className={css({ margin: `80px`, maxWidth: `800px` })}
     >
       <Form>
-        <Heading>App Config</Heading>
-        <Paragraph>
-          Welcome to your contentful app. This is your config page.
-        </Paragraph>
+        <WelcomeSection user={sdk.user} />
 
         <Button variant={`positive`} onClick={() => setOpen(true)}>
           Create a description
@@ -187,23 +225,32 @@ const ConfigScreen = () => {
                   contentTypes={contentTypes}
                   handleAddDescription={handleAddDescription}
                   closeModal={() => setOpen(false)}
+                  users={users}
+                  descriptions={descriptions}
                 />
               </Modal.Content>
             </>
           )}
         </Modal>
+
         {descriptions?.at(0) && (
           <>
-            <Heading>Descriptions</Heading>
+            <Heading className={css({ marginTop: tokens.spacingXl })}>
+              Descriptions
+            </Heading>
             <Accordion>
               {descriptions.map(({ id, contentType, items }) => (
                 <Accordion.Item key={id} title={contentType.name}>
                   <DescriptionEditor
+                    contentType={contentType}
                     items={items}
+                    handleRemove={handleRemoveDescription}
                     onItemChange={(itemId, newValue) =>
                       handleDescriptionChange(id, itemId, newValue)
                     }
-                    onAddItem={() => handleAddItem(id)}
+                    id={id}
+                    onAddItem={handleAddItem}
+                    onRemoveItem={handleRemoveItem}
                   />
                 </Accordion.Item>
               ))}

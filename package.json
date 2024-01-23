@@ -4,8 +4,9 @@
   "private": true,
   "dependencies": {
     "@contentful/app-sdk": "4.22.0",
-    "@contentful/f36-components": "4.45.0",
-    "@contentful/f36-tokens": "4.0.2",
+    "@contentful/f36-components": "^4.58.4",
+    "@contentful/f36-image": "^4.0.0-alpha.0",
+    "@contentful/f36-tokens": "^4.0.4",
     "@contentful/react-apps-toolkit": "1.2.16",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "contentful-management": "10.38.3",

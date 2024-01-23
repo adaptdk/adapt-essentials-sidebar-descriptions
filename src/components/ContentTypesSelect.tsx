@@ -1,20 +1,29 @@
 import {
   Autocomplete,
   Button,
-  List,
-  ListItem,
+  Caption,
+  Flex,
   Paragraph,
+  SectionHeading,
   Stack,
 } from "@contentful/f36-components";
-import React from "react";
+import { Image } from "@contentful/f36-image";
+import tokens from "@contentful/f36-tokens";
+import { UserProps } from "contentful-management";
+import { css } from "emotion";
+import React, { useEffect, useMemo } from "react";
 import { useState } from "react";
 
-import { TypeContentType } from "../utils/types";
+import { formatDate } from "../utils/formatting";
+import { getUserById } from "../utils/helpers";
+import { TypeContentType, TypeDescription } from "../utils/types";
 
 type Props = {
   contentTypes: Array<TypeContentType>;
   handleAddDescription: (contentType: TypeContentType) => void;
   closeModal: () => void;
+  users: UserProps[];
+  descriptions: TypeDescription[];
 };
 
 const emptyContentType = {
@@ -22,7 +31,18 @@ const emptyContentType = {
   id: ``,
   description: ``,
   sys: {
+    type: ``,
+    id: ``,
+    version: 1,
+    updatedAt: ``,
     createdAt: ``,
+    createdBy: {
+      sys: {
+        id: ``,
+        type: ``,
+        linkType: ``,
+      },
+    },
   },
 };
 
@@ -30,28 +50,44 @@ const ContentTypesSelect = ({
   contentTypes,
   handleAddDescription,
   closeModal,
+  users,
+  descriptions,
 }: Props) => {
   const [selectedType, setSelectedType] =
     useState<TypeContentType>(emptyContentType);
   const [filteredItems, setFilteredItems] = useState(contentTypes);
   const [inputValue, setInputValue] = useState(``);
 
+  useEffect(() => {
+    const descriptionIds = descriptions?.at(0)
+      ? descriptions.map(({ id }) => id)
+      : [];
+
+    if (descriptionIds.length > 0) {
+      const filtered = contentTypes.filter(
+        ({ id }) => !descriptionIds.includes(id),
+      );
+
+      if (filtered?.at(0)) {
+        setFilteredItems(filtered);
+      }
+    }
+  }, [descriptions, contentTypes]);
+
+  const user = useMemo(
+    () => getUserById(selectedType.sys?.createdBy?.sys?.id, users),
+    [selectedType, users],
+  );
+
   const handleInputValueChange = (value: string) => {
     setInputValue(value);
-    const newFilteredItems = contentTypes.filter((item) =>
-      item.name.toLowerCase().includes(value.toLowerCase()),
-    );
-    setFilteredItems(newFilteredItems);
   };
 
   const handleSelectItem = (item: TypeContentType) => {
-    console.log(`item: `, item);
     setSelectedType(item);
   };
 
   const renderItem = (item: TypeContentType) => item.name;
-
-  console.log(selectedType);
 
   const handleClick = () => {
     handleAddDescription(selectedType);
@@ -75,11 +111,47 @@ const ContentTypesSelect = ({
       <Paragraph>
         Below you can confirm the selected content type&apos;s information.
       </Paragraph>
-      <List>
-        <ListItem>Name: {selectedType.name}</ListItem>
-        <ListItem>Description: {selectedType.description}</ListItem>
-        <ListItem>Created at: {selectedType.sys.createdAt}</ListItem>
-      </List>
+
+      <Stack
+        flexDirection={`column`}
+        alignItems={`flex-start`}
+        className={css({ gap: 0 })}
+        fullWidth
+      >
+        <SectionHeading>{selectedType.name || `Content type`}</SectionHeading>
+        <Paragraph>{selectedType.description || `No description`}</Paragraph>
+
+        <Flex fullWidth justifyContent={`flex-start`} gap={tokens.spacingXl}>
+          <Flex flexDirection={`column`}>
+            <Caption fontWeight={`fontWeightMedium`}>Created at</Caption>
+            <Caption>{formatDate(selectedType.sys.createdAt)}</Caption>
+          </Flex>
+
+          <Flex flexDirection={`column`} className={css({ gap: `0.25rem` })}>
+            <Caption fontWeight={`fontWeightMedium`}>Created by</Caption>
+            <Caption
+              className={css({
+                display: `flex`,
+                alignItems: `center`,
+                gap: `0.25rem`,
+              })}
+            >
+              {user && (
+                <Image
+                  src={user?.avatarUrl}
+                  alt={`${user?.firstName} ${user?.lastName}`}
+                  width={`20px`}
+                  height={`20px`}
+                  className={css({
+                    borderRadius: tokens.borderRadiusMedium,
+                  })}
+                />
+              )}
+              {user?.firstName} {user?.lastName}
+            </Caption>
+          </Flex>
+        </Flex>
+      </Stack>
       <Button
         onClick={handleClick}
         isDisabled={!selectedType.name}

@@ -1,10 +1,10 @@
+import { BasicMetaSysProps } from "contentful-management";
+
 export type TypeContentType = {
   id: string;
   name: string;
   description: string;
-  sys: {
-    createdAt: string;
-  };
+  sys: BasicMetaSysProps;
 };
 
 export type TypeDescriptionItem = {
