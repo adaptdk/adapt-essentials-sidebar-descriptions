@@ -5,7 +5,6 @@ import {
   Flex,
   Form,
   Heading,
-  Modal,
 } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
 import { useSDK } from "@contentful/react-apps-toolkit";
@@ -15,8 +14,8 @@ import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import ContentTypesSelect from "../components/ContentTypesSelect";
-import DescriptionEditor from "../components/DescriptionEditor";
+import { DescriptionEditor } from "../components/description";
+import CreateModal from "../components/description/CreateModal";
 import { WelcomeSection } from "../components/WelcomeSection";
 import { TypeContentType, TypeDescription } from "../utils/types";
 
@@ -42,8 +41,6 @@ const ConfigScreen = () => {
     // Get current the state of EditorInterface and other entities
     // related to this app installation
     const currentState = await sdk.app.getCurrentState();
-
-    console.log(`descriptions on save: `, descriptions);
 
     return {
       // Parameters to be persisted as the app configuration.
@@ -164,8 +161,6 @@ const ConfigScreen = () => {
     );
   };
 
-  console.log(`descriptions: `, descriptions);
-
   const handleAddItem = (descriptionId: string, type: `text` | `image`) => {
     setDescriptions(
       descriptions.map((description) => {
@@ -213,25 +208,15 @@ const ConfigScreen = () => {
           Create a description
         </Button>
 
-        <Modal onClose={() => setOpen(false)} isShown={isOpen}>
-          {() => (
-            <>
-              <Modal.Header
-                title="Create description"
-                onClose={() => setOpen(false)}
-              />
-              <Modal.Content>
-                <ContentTypesSelect
-                  contentTypes={contentTypes}
-                  handleAddDescription={handleAddDescription}
-                  closeModal={() => setOpen(false)}
-                  users={users}
-                  descriptions={descriptions}
-                />
-              </Modal.Content>
-            </>
-          )}
-        </Modal>
+        <CreateModal
+          setOpen={setOpen}
+          isOpen={isOpen}
+          contentTypes={contentTypes}
+          handleAddDescription={handleAddDescription}
+          closeModal={() => setOpen(false)}
+          users={users}
+          descriptions={descriptions}
+        />
 
         {descriptions?.at(0) && (
           <>

@@ -67,8 +67,6 @@ const Sidebar = () => {
     );
   }
 
-  console.log(description);
-
   return (
     <Box>
       {description.items?.at(0) && (

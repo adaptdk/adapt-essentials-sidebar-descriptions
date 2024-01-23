@@ -1,5 +1,6 @@
 import { UserAPI } from "@contentful/app-sdk";
 import { Heading, Paragraph } from "@contentful/f36-components";
+import tokens from "@contentful/f36-tokens";
 import { css } from "emotion";
 import React from "react";
 
@@ -14,7 +15,11 @@ export const WelcomeSection = ({ user }: TypeWelcomeSection) => (
     <Heading>{APP_TITLE}</Heading>
     <Heading
       as={`h2`}
-      className={css({ display: `flex`, alignItems: `center`, gap: `0.25rem` })}
+      className={css({
+        display: `flex`,
+        alignItems: `center`,
+        gap: tokens.spacing2Xs,
+      })}
     >
       Hi,{` `}
       <img
