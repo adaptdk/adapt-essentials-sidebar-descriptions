@@ -1,11 +1,12 @@
 import { ConfigAppSDK } from "@contentful/app-sdk";
 import {
   Accordion,
-  Button,
   Flex,
   Form,
   Heading,
+  IconButton,
 } from "@contentful/f36-components";
+import { PlusIcon } from "@contentful/f36-icons";
 import tokens from "@contentful/f36-tokens";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { UserProps } from "contentful-management";
@@ -204,9 +205,14 @@ const ConfigScreen = () => {
       <Form>
         <WelcomeSection user={sdk.user} />
 
-        <Button variant={`positive`} onClick={() => setOpen(true)}>
+        <IconButton
+          aria-label={`Create a description`}
+          icon={<PlusIcon />}
+          variant={`positive`}
+          onClick={() => setOpen(true)}
+        >
           Create a description
-        </Button>
+        </IconButton>
 
         <CreateModal
           setOpen={setOpen}

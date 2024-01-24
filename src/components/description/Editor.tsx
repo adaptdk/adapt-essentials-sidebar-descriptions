@@ -1,5 +1,5 @@
-import { Button, Flex, IconButton } from "@contentful/f36-components";
-import { DeleteIcon } from "@contentful/f36-icons";
+import { Flex, IconButton } from "@contentful/f36-components";
+import { AssetIcon, DeleteIcon, TextIcon } from "@contentful/f36-icons";
 import tokens from "@contentful/f36-tokens";
 import React, { useState } from "react";
 
@@ -74,12 +74,22 @@ const Editor = ({
         })}
 
       <Flex gap={tokens.spacingM}>
-        <Button variant={`positive`} onClick={() => onAddItem(id, `text`)}>
+        <IconButton
+          aria-label={`Add Text field`}
+          icon={<TextIcon />}
+          variant={`positive`}
+          onClick={() => onAddItem(id, `text`)}
+        >
           Add Text field
-        </Button>
-        <Button variant={`positive`} onClick={() => onAddItem(id, `image`)}>
+        </IconButton>
+        <IconButton
+          aria-label={`Add Image field`}
+          icon={<AssetIcon />}
+          variant={`positive`}
+          onClick={() => onAddItem(id, `image`)}
+        >
           Add Image field
-        </Button>
+        </IconButton>
         <IconButton
           aria-label={`Delete description`}
           variant={`negative`}
