@@ -3,19 +3,17 @@ import {
   Box,
   Flex,
   Heading,
-  IconButton,
   Note,
   Paragraph,
-  Text,
   TextLink,
 } from "@contentful/f36-components";
-import { SettingsIcon } from "@contentful/f36-icons";
 import { Image } from "@contentful/f36-image";
 import tokens from "@contentful/f36-tokens";
 import { /* useCMA, */ useSDK } from "@contentful/react-apps-toolkit";
 import { css } from "emotion";
 import React, { useEffect, useMemo, useState } from "react";
 
+import ConfigButton from "../components/ConfigButton";
 import { TypeDescription } from "../utils/types";
 
 const EntryEditor = () => {
@@ -71,8 +69,6 @@ const EntryEditor = () => {
     );
   }
 
-  console.log({ sdk });
-
   return (
     <Box
       padding={`spacingM`}
@@ -87,18 +83,7 @@ const EntryEditor = () => {
         gap={`spacingM`}
       >
         <Heading>{sdk.contentType.name} - Advanced Description</Heading>
-        <IconButton
-          as={`a`}
-          target={`_blank`}
-          href={appUrl}
-          variant={`secondary`}
-          aria-label="Sidebar configuration"
-          icon={<SettingsIcon />}
-        >
-          <Text marginLeft={`spacing2Xs`} fontWeight={`fontWeightMedium`}>
-            Open configuration
-          </Text>
-        </IconButton>
+        <ConfigButton url={appUrl} />
       </Flex>
 
       {description.items?.at(0) && (

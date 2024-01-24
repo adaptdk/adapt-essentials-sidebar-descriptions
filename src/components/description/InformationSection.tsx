@@ -1,8 +1,9 @@
-import { Flex, IconButton, Paragraph } from "@contentful/f36-components";
-import { SettingsIcon } from "@contentful/f36-icons";
+import { Flex, Paragraph } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import React, { useEffect, useState } from "react";
+
+import ConfigButton from "../ConfigButton";
 
 type TypeInformationSection = {
   id: string;
@@ -32,20 +33,17 @@ const InformationSection = ({ id }: TypeInformationSection) => {
   }, [sdk]);
 
   return (
-    <Flex gap={tokens.spacing3Xl} alignItems={`flex-start`}>
+    <Flex
+      gap={tokens.spacing3Xl}
+      alignItems={`flex-start`}
+      justifyContent={`space-between`}
+    >
       <Paragraph>
-        To add more fields, press one of the Add buttons below. To open this
-        content type&apos;s sidebar configuration, press the settings icon on
-        the right.
+        To add more fields, press one of the <strong>Add</strong> buttons below.
+        To open this content type&apos;s sidebar configuration, press the
+        configuration button on the right.
       </Paragraph>
-      <IconButton
-        as={`a`}
-        target={`_blank`}
-        href={configUrl}
-        variant={`secondary`}
-        aria-label="Sidebar configuration"
-        icon={<SettingsIcon />}
-      />
+      <ConfigButton url={configUrl} />
     </Flex>
   );
 };
