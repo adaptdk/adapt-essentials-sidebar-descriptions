@@ -61,20 +61,20 @@ const CreateModal = ({
     useState<TypeContentType>(emptyContentType);
   const [filteredItems, setFilteredItems] = useState(contentTypes);
   const [inputValue, setInputValue] = useState(``);
+  console.log({ contentTypes, filteredItems });
 
   useEffect(() => {
     const descriptionIds = descriptions?.at(0)
       ? descriptions.map(({ id }) => id)
       : [];
 
-    if (descriptionIds.length > 0) {
-      const filtered = contentTypes.filter(
-        ({ id }) => !descriptionIds.includes(id),
-      );
+    console.log(`should not fire`);
+    const filtered = contentTypes.filter(
+      ({ id }) => !descriptionIds.includes(id),
+    );
 
-      if (filtered?.at(0)) {
-        setFilteredItems(filtered);
-      }
+    if (filtered?.at(0)) {
+      setFilteredItems(filtered);
     }
   }, [descriptions, contentTypes]);
 
