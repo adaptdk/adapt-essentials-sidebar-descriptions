@@ -7,6 +7,7 @@ import {
   TextInput,
 } from "@contentful/f36-components";
 import { DeleteIcon } from "@contentful/f36-icons";
+import { Image } from "@contentful/f36-image";
 import tokens from "@contentful/f36-tokens";
 import { css } from "emotion";
 import React from "react";
@@ -34,6 +35,15 @@ const ImageField = ({
         value={value}
         onChange={(e) => onItemChange(itemId, e.target.value)}
       />
+      {isValidUrl && (
+        <Image
+          src={value}
+          alt="thumbnail"
+          height={`40px`}
+          width={`auto`}
+          className={css({ maxWidth: `200px` })}
+        />
+      )}
       <IconButton
         variant={`negative`}
         aria-label="Delete field"
