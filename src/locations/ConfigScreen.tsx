@@ -15,6 +15,7 @@ import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import ChangesMade from "../components/ChangesMade";
 import { DescriptionEditor } from "../components/description";
 import CreateModal from "../components/description/CreateModal";
 import { WelcomeSection } from "../components/WelcomeSection";
@@ -32,6 +33,7 @@ const ConfigScreen = () => {
   );
   const [users, setUsers] = useState<UserProps[] | []>([]);
   const [isOpen, setOpen] = useState(false);
+  const [changesMade, setChangesMade] = useState(false);
   const sdk = useSDK<ConfigAppSDK>();
 
   const onConfigure = useCallback(async () => {
@@ -128,6 +130,7 @@ const ConfigScreen = () => {
 
     descriptionsClone.push(description);
     setDescriptions(descriptionsClone);
+    setChangesMade(true);
   };
 
   const handleRemoveDescription = (descriptionId: string) => {
@@ -137,6 +140,7 @@ const ConfigScreen = () => {
 
     // Update the state with the new descriptions array
     setDescriptions(updatedDescriptions);
+    setChangesMade(true);
   };
 
   const handleDescriptionChange = (
@@ -160,6 +164,7 @@ const ConfigScreen = () => {
         return description;
       }),
     );
+    setChangesMade(true);
   };
 
   const handleAddItem = (descriptionId: string, type: `text` | `image`) => {
@@ -181,6 +186,7 @@ const ConfigScreen = () => {
         return description;
       }),
     );
+    setChangesMade(true);
   };
 
   const handleRemoveItem = (descriptionId: string, itemId: string) => {
@@ -195,13 +201,20 @@ const ConfigScreen = () => {
         return description;
       }),
     );
+    setChangesMade(true);
   };
 
   return (
     <Flex
       flexDirection="column"
-      className={css({ margin: `80px`, maxWidth: `800px` })}
+      padding={`spacing3Xl`}
+      className={css({
+        maxWidth: tokens.contentWidthDefault,
+        margin: `0 auto`,
+      })}
     >
+      <ChangesMade visible={changesMade} />
+
       <Form>
         <WelcomeSection user={sdk.user} />
 
