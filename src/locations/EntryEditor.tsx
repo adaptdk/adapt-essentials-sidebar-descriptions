@@ -14,6 +14,7 @@ import { css } from "emotion";
 import React, { useEffect, useMemo, useState } from "react";
 
 import ConfigButton from "../components/ConfigButton";
+import MarkdownRender from "../components/MarkdownRender";
 import { TypeDescription } from "../utils/types";
 
 const EntryEditor = () => {
@@ -90,14 +91,7 @@ const EntryEditor = () => {
         <Flex flexDirection={`column`}>
           {description.items.map((item) => {
             if (item.type === `text`) {
-              return (
-                <Paragraph
-                  key={item.id}
-                  className={css({ maxWidth: tokens.contentWidthText })}
-                >
-                  {item.value}
-                </Paragraph>
-              );
+              return <MarkdownRender key={item.id} value={item.value} />;
             }
 
             if (item.type === `image`) {
