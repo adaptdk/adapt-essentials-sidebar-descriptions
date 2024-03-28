@@ -5,9 +5,16 @@ import Markdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 
-const MarkdownRender = ({ value }: { value: string }) => (
+type TypeMarkdownRender = { value: string; isSidebar?: boolean };
+
+const MarkdownRender = ({ value, isSidebar }: TypeMarkdownRender) => (
   <Markdown
-    className={css({ maxWidth: tokens.contentWidthText })}
+    className={css({
+      maxWidth: tokens.contentWidthText,
+      display: `flex`,
+      flexDirection: `column`,
+      gap: isSidebar ? `0.5rem` : `1rem`,
+    })}
     remarkPlugins={[remarkGfm]}
     rehypePlugins={[rehypeHighlight]}
   >
